@@ -28,10 +28,30 @@ definition(
 )
 
 preferences {
-    page(name:"mainPage", title:"Hue Device Setup", content:"mainPage", refreshTimeout:5)
-    page(name:"bridgeDiscovery", title:"Hue Bridge Discovery", content:"bridgeDiscovery", refreshTimeout:5)
-    page(name:"bridgeBtnPush", title:"Linking with your Hue", content:"bridgeLinking", refreshTimeout:5)
-    page(name:"itemDiscovery", title:"Hue Device Setup", content:"itemDiscovery", refreshTimeout:5)
+    page(
+        name: "mainPage",
+        title: "Hue Device Setup",
+        content: "mainPage",
+        refreshTimeout: 5,
+    )
+    page(
+        name: "bridgeDiscovery",
+        title: "Hue Bridge Discovery",
+        content: "bridgeDiscovery",
+        refreshTimeout: 5,
+    )
+    page(
+        name: "bridgeBtnPush",
+        title: "Linking with your Hue",
+        content: "bridgeLinking",
+        refreshTimeout: 5,
+    )
+    page(
+        name: "itemDiscovery",
+        title: "Hue Device Setup",
+        content: "itemDiscovery",
+        refreshTimeout: 5,
+    )
 }
 
 def mainPage() {
