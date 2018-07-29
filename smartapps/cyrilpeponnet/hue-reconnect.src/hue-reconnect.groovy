@@ -152,51 +152,83 @@ def bridgeLinking() {
 }
 
 def itemDiscovery() {
-    int bulbRefreshCount = !state.bulbRefreshCount ? 0 : state.bulbRefreshCount as int
+    int bulbRefreshCount = state.get('bulbRefreshCount', 0)
     state.bulbRefreshCount = bulbRefreshCount + 1
     def refreshInterval = 3
     state.inItemDiscovery = true
-    def bridge = null
     if (selectedHue) {
-        bridge = getChildDevice(selectedHue)
+        def bridge = getChildDevice(selectedHue)
         subscribe(bridge, "bulbList", bulbListData)
         subscribe(bridge, "groupList", groupListData)
         subscribe(bridge, "sceneList", sceneListData)
     }
     state.bridgeRefreshCount = 0
-    def bulboptions = bulbsDiscovered() ?: [:]
-    def bulbs_numFound = bulboptions.size() ?: 0
-    if (bulbs_numFound == 0) {
+
+    Map bulbs = bulbsDiscovered()
+    if (!bulbs) {
         app.updateSetting("selectedBulbs", "")
     }
-    def scenesoptions = scenesDiscovered() ?: [:]
-    def scenes_numFound = scenesoptions.size() ?: 0
-    if (scenes_numFound == 0) {
+
+    Map scenes = scenesDiscovered()
+    if (!scenes) {
         app.updateSetting("selectedScenes", "")
     }
-    def groupsoptions = groupsDiscovered() ?: [:]
-    def groups_numFound = groupsoptions.size() ?: 0
-    if (groups_numFound == 0) {
+
+    Map groups = groupsDiscovered()
+    if (!groups) {
         app.updateSetting("selectedGroups", "")
     }
+
+    // XXX should this be done before app settings are updated?
     if ((bulbRefreshCount % 3) == 0) {
         discoverHueBulbs()
         discoverHueScenes()
         discoverHueGroups()
     }
 
-    return dynamicPage(name:"itemDiscovery", title:"Bulb and scenes Discovery Started!", nextPage:"", refreshInterval:refreshInterval, install:true, uninstall: true) {
-        section("Please wait while we discover your Hue Bulbs and Scenes. Discovery can take several minutes, so sit back and relax! Select your device and scene below once discovered.") {
-            input "selectedBulbs", "enum", required:false, title:"Select Hue Bulbs (${bulbs_numFound} found)", multiple:true, options:bulboptions.sort {it.value}
-            input "selectedScenes", "enum", required:false, title:"Select Hue Scenes (${scenes_numFound} found)", multiple:true, options:scenesoptions.sort {it.value}
-            input "selectedGroups", "enum", required:false, title:"Select Hue Groups (${groups_numFound} found)", multiple:true, options:groupsoptions.sort {it.value}
+    return dynamicPage(
+        name: "itemDiscovery",
+        title: "Bulb and scenes Discovery Started!",
+        nextPage: "",
+        refreshInterval: refreshInterval,
+        install: true,
+        uninstall: true,
+    ) {
+        def secTitle = "Please wait while we discover your Hue Bulbs and Scenes." \
+            + " Discovery can take several minutes, so sit back and relax!" \
+            + " Select your device and scene below once discovered."
+        section(secTitle) {
+            input("selectedBulbs", "enum",
+                required: false,
+                title: "Select Hue Bulbs (${bulbs?.size()} found)",
+                multiple: true,
+                options: bulbs.sort { it.value },
+            )
+            input("selectedScenes", "enum",
+                required: false,
+                title: "Select Hue Scenes (${scenes?.size()} found)",
+                multiple: true,
+                options: scenes.sort { it.value },
+            )
+            input("selectedGroups", "enum",
+                required: false,
+                title: "Select Hue Groups (${groups?.size()} found)",
+                multiple: true,
+                options: groups.sort { it.value },
+            )
         }
+
         section {
             def title = getBridgeIP() ? "Hue bridge (${getBridgeIP()})" : "Find bridges"
-            href "bridgeDiscovery", title: title, description: "", state: selectedHue ? "complete" : "incomplete", params: [override: true]
+            href("bridgeDiscovery",
+                title: title,
+                description: "",
+                state: selectedHue ? "complete" : "incomplete",
+                params: [override: true],
+            )
         }
     }
-}
+} // itemDiscovery
 
 private discoverBridges() {
     sendHubCommand(new physicalgraph.device.HubAction("lan discovery urn:schemas-upnp-org:device:basic:1", physicalgraph.device.Protocol.LAN))
