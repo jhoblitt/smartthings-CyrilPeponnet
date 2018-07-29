@@ -264,14 +264,16 @@ private verifyHueBridges() {
 }
 
 Map bridgesDiscovered() {
+    log.trace("Entered bridgesDiscovered")
+
     def vbridges = getVerifiedHueBridges()
     def map = [:]
-    vbridges.each {
-        def value = "${it.value.name}"
-        def key = "${it.value.mac}"
-        map["${key}"] = value
+    vbridges.each { b ->
+        def value = b.value.name
+        def key = b.value.mac
+        map[key] = value
     }
-    map
+    return map
 }
 
 Map bulbsDiscovered() {
