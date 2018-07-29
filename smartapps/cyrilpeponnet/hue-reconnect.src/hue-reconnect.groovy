@@ -248,23 +248,28 @@ private sendDeveloperReq() {
 }
 
 private discoverHueBulbs() {
-    def host = getBridgeIP()
-    sendHubCommand(new physicalgraph.device.HubAction([
-        method: "GET",
-        path: "/api/${state.username}/lights",
-        headers: [
-            HOST: host
-        ]], "${selectedHue}"))
+    log.debug("Discovering New Bulbs")
+
+    def action = new physicalgraph.device.HubAction(
+        [
+            method: "GET",
+            path: "/api/${username}/lights",
+            headers: [HOST: getBridgeIP()],
+        ],
+        selectedHue
+    )
+    sendHubCommand(action)
 }
 
 private discoverHueScenes() {
-    def host = getBridgeIP()
-    sendHubCommand(new physicalgraph.device.HubAction([
+    log.debug("Discovering New Scenes")
+
+    def action = new physicalgraph.device.HubAction([
         method: "GET",
-        path: "/api/${state.username}/scenes",
-        headers: [
-            HOST: host
-        ]], "${selectedHue}"))
+        path: "/api/${username}/scenes",
+        headers: [HOST: getBridgeIP()]
+    ], "${selectedHue}")
+    sendHubCommand(action)
 }
 
 private discoverHueGroups() {
