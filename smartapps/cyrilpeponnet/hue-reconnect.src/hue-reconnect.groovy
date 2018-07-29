@@ -55,8 +55,7 @@ To update your Hub, access Location Settings in the Main Menu (tap the gear next
     }
 }
 
-def bridgeDiscovery(params=[:])
-{
+def bridgeDiscovery(params=[:]) {
     def bridges = bridgesDiscovered()
     int bridgeRefreshCount = !state.bridgeRefreshCount ? 0 : state.bridgeRefreshCount as int
     state.bridgeRefreshCount = bridgeRefreshCount + 1
@@ -91,8 +90,7 @@ def bridgeDiscovery(params=[:])
     }
 }
 
-def bridgeLinking()
-{
+def bridgeLinking() {
     int linkRefreshcount = !state.linkRefreshcount ? 0 : state.linkRefreshcount as int
     state.linkRefreshcount = linkRefreshcount + 1
     def refreshInterval = 3
@@ -405,7 +403,7 @@ def timedRefresh() {
     runIn(10, manualRefresh)
 }
 
-def uninstalled(){
+def uninstalled() {
     state.bridges = [:]
     state.username = null
 }
@@ -727,7 +725,7 @@ def locationHandler(evt) {
     }
 }
 
-def doDeviceSync(){
+def doDeviceSync() {
     log.trace "Doing Hue Device Sync"
     convertBulbListToMap()
     convertGroupListToMap()
