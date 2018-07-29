@@ -1189,3 +1189,5 @@ private Boolean hasAllHubsOver(String desiredFirmware) {
 private List getRealHubFirmwareVersions() {
     return location.hubs*.firmwareVersionString.findAll { it }
 }
+
+// vim: tabstop=4 shiftwidth=4 expandtab
