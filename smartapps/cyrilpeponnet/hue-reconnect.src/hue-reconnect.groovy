@@ -264,11 +264,14 @@ private discoverHueBulbs() {
 private discoverHueScenes() {
     log.debug("Discovering New Scenes")
 
-    def action = new physicalgraph.device.HubAction([
-        method: "GET",
-        path: "/api/${username}/scenes",
-        headers: [HOST: getBridgeIP()]
-    ], "${selectedHue}")
+    def action = new physicalgraph.device.HubAction(
+        [
+            method: "GET",
+            path: "/api/${username}/scenes",
+            headers: [HOST: getBridgeIP()],
+        ],
+        selectedHue
+    )
     sendHubCommand(action)
 }
 
