@@ -276,14 +276,17 @@ private discoverHueScenes() {
 }
 
 private discoverHueGroups() {
-    def host = getBridgeIP()
     log.debug("Discovering New Groups")
-    sendHubCommand(new physicalgraph.device.HubAction([
-        method: "GET",
-        path: "/api/${state.username}/groups",
-        headers: [
-            HOST: host
-        ]], "${selectedHue}"))
+
+    def action = new physicalgraph.device.HubAction(
+        [
+            method: "GET",
+            path: "/api/${username}/groups",
+            headers: [HOST: getBridgeIP()],
+        ],
+        selectedHue
+    )
+    sendHubCommand(action)
 }
 
 private verifyHueBridge(String deviceNetworkId, String host) {
