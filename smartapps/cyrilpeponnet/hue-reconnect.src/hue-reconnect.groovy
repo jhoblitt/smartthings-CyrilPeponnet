@@ -290,12 +290,15 @@ private discoverHueGroups() {
 }
 
 private verifyHueBridge(String deviceNetworkId, String host) {
-    sendHubCommand(new physicalgraph.device.HubAction([
-        method: "GET",
-        path: "/description.xml",
-        headers: [
-            HOST: host
-        ]], deviceNetworkId))
+    def action = new physicalgraph.device.HubAction(
+        [
+            method: "GET",
+            path: "/description.xml",
+            headers: [HOST: host],
+        ],
+        deviceNetworkId
+    )
+    sendHubCommand(action)
 }
 
 private verifyHueBridges() {
