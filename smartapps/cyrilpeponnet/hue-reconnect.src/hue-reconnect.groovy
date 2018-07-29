@@ -235,15 +235,16 @@ private discoverBridges() {
 }
 
 private sendDeveloperReq() {
-    def token = app.id
-    def host = getBridgeIP()
-    sendHubCommand(new physicalgraph.device.HubAction([
-        method: "POST",
-        path: "/api",
-        headers: [
-            HOST: host
+    def action = new physicalgraph.device.HubAction(
+        [
+            method: "POST",
+            path: "/api",
+            headers: [HOST: getBridgeIP()],
+            body: [devicetype: "${app.id}-0"],
         ],
-        body: [devicetype: "$token-0"]], "${selectedHue}"))
+        selectedHue
+    )
+    sendHubCommand(action)
 }
 
 private discoverHueBulbs() {
