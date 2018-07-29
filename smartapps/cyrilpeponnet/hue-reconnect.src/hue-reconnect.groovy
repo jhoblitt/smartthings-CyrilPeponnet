@@ -273,7 +273,7 @@ Map bridgesDiscovered() {
 
 Map bulbsDiscovered() {
     log.debug("Entered BulbsDiscovered")
-    def bulbs =  getHueBulbs()
+    def bulbs = getHueBulbs()
     def bulbmap = [:]
     if (bulbs instanceof java.util.Map) {
         bulbs.each {
@@ -295,7 +295,7 @@ Map bulbsDiscovered() {
 
 Map groupsDiscovered() {
     log.debug("Entered BulbsDiscovered")
-    def groups =  getHueGroups()
+    def groups = getHueGroups()
     def groupmap = [:]
     if (groups instanceof java.util.Map) {
         groups.each {
@@ -316,7 +316,7 @@ Map groupsDiscovered() {
 }
 
 Map scenesDiscovered() {
-    def scenes =  getHueScenes()
+    Map scenes = getHueScenes()
     def scenemap = [:]
     def sceneTime = [:]
     // first pass to keep only the latest items
@@ -1119,7 +1119,7 @@ private getBridgeIP() {
         def d = getChildDevice(selectedHue)
         if (d) {
             if (d.getDeviceDataByName("networkAddress")) {
-                host =  d.getDeviceDataByName("networkAddress")
+                host = d.getDeviceDataByName("networkAddress")
             } else {
                 host = d.latestState('networkAddress').stringValue
             }
