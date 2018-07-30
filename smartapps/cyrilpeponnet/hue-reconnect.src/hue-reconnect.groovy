@@ -611,44 +611,43 @@ def addBulbs() {
 }
 
 def addScenes() {
-    def scenes = getHueScenes()
+    Map scenes = getHueScenes()
+
     selectedScenes?.each { dni ->
         def d = getChildDevice(dni)
         def latest_offStates = [:]
-        if (scenes instanceof java.util.Map) {
-            def newHueScene = scenes.find { (app.id + "/" + it.value.id) == dni }
-            if (newHueScene) {
-                def name = newHueScene?.value.name.minus(~/ on \d+/)
-                // not sure about the group... set it to 0 for now
-                def group = "0"
-                if (!d) {
-                    d = addChildDevice("cyrilpeponnet", "Hue Scene", dni, newHueScene?.value.hub, ["name":name])
-                    log.debug "created ${d.displayName} with id $dni"
-                } else {
-                    log.debug "found ${d.displayName} with id $dni already exists, type: '$d.typeName'"
-                    d.setDeviceType("Hue Scene")
-                }
-                def childDevice = getChildDevice(d.deviceNetworkId)
-                childDevice.sendEvent(name: "lights", value: newHueScene?.value.lights)
-                childDevice.sendEvent(name: "group", value: group)
-                def offStates = scenes.findAll{ it.value.name ==~ /${name} off \d+/ }
-                if (offStates) {
-                    offStates.each {
-                        if (latest_offStates."${name}") {
-                            if (latest_offStates."${name}".lastupdated && is_latest(it.value.lastupdated, latest_offStates."${name}".lastupdated)) {
-                                latest_offStates["${name}"] = ['lastupdated': it.value.lastupdated, 'id': it.value.id]
-                            }
-                        } else {
+        def newHueScene = scenes.find { (app.id + "/" + it.value.id) == dni }
+        if (newHueScene) {
+            def name = newHueScene?.value.name.minus(~/ on \d+/)
+            // not sure about the group... set it to 0 for now
+            def group = "0"
+            if (!d) {
+                d = addChildDevice("cyrilpeponnet", "Hue Scene", dni, newHueScene?.value.hub, ["name":name])
+                log.debug "created ${d.displayName} with id $dni"
+            } else {
+                log.debug "found ${d.displayName} with id $dni already exists, type: '$d.typeName'"
+                d.setDeviceType("Hue Scene")
+            }
+            def childDevice = getChildDevice(d.deviceNetworkId)
+            childDevice.sendEvent(name: "lights", value: newHueScene?.value.lights)
+            childDevice.sendEvent(name: "group", value: group)
+            def offStates = scenes.findAll{ it.value.name ==~ /${name} off \d+/ }
+            if (offStates) {
+                offStates.each {
+                    if (latest_offStates."${name}") {
+                        if (latest_offStates."${name}".lastupdated && is_latest(it.value.lastupdated, latest_offStates."${name}".lastupdated)) {
                             latest_offStates["${name}"] = ['lastupdated': it.value.lastupdated, 'id': it.value.id]
                         }
+                    } else {
+                        latest_offStates["${name}"] = ['lastupdated': it.value.lastupdated, 'id': it.value.id]
                     }
-                    childDevice.sendEvent(name: 'offStateId', value: latest_offStates."${name}"?.id)
                 }
-                log.debug "created ${d.displayName} with id $dni"
-                d.refresh()
-            } else {
-                log.debug "Looking for ${dni} in scene list but not match found ${scenes}"
+                childDevice.sendEvent(name: 'offStateId', value: latest_offStates."${name}"?.id)
             }
+            log.debug "created ${d.displayName} with id $dni"
+            d.refresh()
+        } else {
+            log.debug "Looking for ${dni} in scene list but not match found ${scenes}"
         }
     }
 }
