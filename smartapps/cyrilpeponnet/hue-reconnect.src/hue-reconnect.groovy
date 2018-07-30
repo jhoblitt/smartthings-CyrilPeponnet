@@ -434,6 +434,10 @@ Map getHueBridges() {
     state.bridges = state.bridges ?: [:]
 }
 
+void setHueBridges(Map b) {
+    state.bridges = b
+}
+
 def getVerifiedHueBridges() {
     getHueBridges().findAll{ it?.value?.verified == true }
 }
