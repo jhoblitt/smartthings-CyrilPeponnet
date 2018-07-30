@@ -434,6 +434,14 @@ def getVerifiedHueBridges() {
     getHueBridges().findAll{ it?.value?.verified == true }
 }
 
+int getBulbRefreshCount() {
+    state.bulbRefreshCount = state.bulbRefreshCount ?: 0
+}
+
+void setBulbRefreshCount(int c) {
+    state.bulbRefreshCount = c
+}
+
 def installed() {
     log.trace "Installed with settings: ${settings}"
     initialize()
