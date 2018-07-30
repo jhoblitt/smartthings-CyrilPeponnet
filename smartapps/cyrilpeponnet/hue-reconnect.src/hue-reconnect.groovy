@@ -152,8 +152,7 @@ def bridgeLinking() {
 }
 
 def itemDiscovery() {
-    int bulbRefreshCount = state.get('bulbRefreshCount', 0)
-    state.bulbRefreshCount = bulbRefreshCount + 1
+    bulbRefreshCount += 1
     def refreshInterval = 3
     state.inItemDiscovery = true
     if (selectedHue) {
@@ -459,7 +458,7 @@ def initialize() {
     unsubscribe(bridge)
     state.inItemDiscovery = false
     state.bridgeRefreshCount = 0
-    state.bulbRefreshCount = 0
+    bulbRefreshCount = 0
     if (selectedHue) {
         addBridge()
         addBulbs()
