@@ -441,6 +441,14 @@ void setBulbRefreshCount(int c) {
     state.bulbRefreshCount = c
 }
 
+String getUsername() {
+    state.username
+}
+
+void setUsername(String u) {
+    state.username = u
+}
+
 def installed() {
     log.trace "Installed with settings: ${settings}"
     initialize()
