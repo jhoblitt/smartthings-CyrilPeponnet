@@ -386,26 +386,25 @@ Map scenesDiscovered() {
     Map scenes = getHueScenes()
     def scenemap = [:]
     def sceneTime = [:]
+
     // first pass to keep only the latest items
-    if (scenes instanceof java.util.Map) {
-        scenes.each {
-            def shortname = it.value.name.minus(~/ on \d+/)
-            if (sceneTime."${shortname}") {
-                if (sceneTime."${shortname}".lastupdated && is_latest(it.value.lastupdated, sceneTime."${shortname}".lastupdated)) {
-                    sceneTime["${shortname}"] = ['lastupdated': it.value.lastupdated, 'id': it.value.id]
-                }
-            } else {
+    scenes.each {
+        def shortname = it.value.name.minus(~/ on \d+/)
+        if (sceneTime."${shortname}") {
+            if (sceneTime."${shortname}".lastupdated && is_latest(it.value.lastupdated, sceneTime."${shortname}".lastupdated)) {
                 sceneTime["${shortname}"] = ['lastupdated': it.value.lastupdated, 'id': it.value.id]
             }
+        } else {
+            sceneTime["${shortname}"] = ['lastupdated': it.value.lastupdated, 'id': it.value.id]
         }
+    }
 
-        scenes.each {
-            log.trace "Adding ${it.value.name} to scene list"
-            def lights = it.value.lights ? " ${it.value.lights}" : ''
-            def value = "${it.value.name.minus(~/ on \d+/)}${lights}"
-            def key = app.id +"/"+ it.value.id
-            scenemap["${key}"] = value
-        }
+    scenes.each {
+        log.trace "Adding ${it.value.name} to scene list"
+        def lights = it.value.lights ? " ${it.value.lights}" : ''
+        def value = "${it.value.name.minus(~/ on \d+/)}${lights}"
+        def key = app.id +"/"+ it.value.id
+        scenemap["${key}"] = value
     }
 
     return scenemap
