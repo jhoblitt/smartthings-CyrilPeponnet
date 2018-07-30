@@ -94,7 +94,7 @@ def bridgeDiscovery(params=[:]) {
 
     if (numFound == 0 && bridgeRefreshCount > 25) {
         log.trace "Cleaning old bridges memory"
-        state.bridges = [:]
+        hueBridges = [:]
         bridgeRefreshCount = 0
         app.updateSetting("selectedHue", "")
     }
@@ -306,7 +306,7 @@ private verifyHueBridge(String deviceNetworkId, String host) {
 }
 
 private verifyHueBridges() {
-    def devices = getHueBridges().findAll { it?.value?.verified != true }
+    def devices = hueBridges.findAll { it?.value?.verified != true }
     devices.each {
         def ip = convertHexToIP(it.value.networkAddress)
         def port = convertHexToInt(it.value.deviceAddress)
@@ -439,7 +439,7 @@ void setHueBridges(Map b) {
 }
 
 def getVerifiedHueBridges() {
-    getHueBridges().findAll{ it?.value?.verified == true }
+    hueBridges.findAll{ it?.value?.verified == true }
 }
 
 int getBulbRefreshCount() {
@@ -508,7 +508,7 @@ def timedRefresh() {
 }
 
 def uninstalled() {
-    state.bridges = [:]
+    hueBridges = [:]
     username = null
 }
 
@@ -724,19 +724,18 @@ def locationHandler(evt) {
     if (parsedEvent?.ssdpTerm?.contains("urn:schemas-upnp-org:device:basic:1")) {
         //SSDP DISCOVERY EVENTS
         log.trace "SSDP DISCOVERY EVENTS"
-        def bridges = getHueBridges()
-        log.trace bridges.toString()
-        if (!(bridges."${parsedEvent.ssdpUSN.toString()}")) {
+        log.trace hueBridges.toString()
+        if (!(hueBridges."${parsedEvent.ssdpUSN.toString()}")) {
             //bridge does not exist
             log.trace "Adding bridge ${parsedEvent.ssdpUSN}"
-            bridges << ["${parsedEvent.ssdpUSN.toString()}":parsedEvent]
+            hueBridges << ["${parsedEvent.ssdpUSN.toString()}":parsedEvent]
         } else {
             // update the values
             def ip = convertHexToIP(parsedEvent.networkAddress)
             def port = convertHexToInt(parsedEvent.deviceAddress)
             def host = ip + ":" + port
             log.debug "Device ($parsedEvent.mac) was already found in state with ip = $host."
-            def dstate = bridges."${parsedEvent.ssdpUSN.toString()}"
+            def dstate = hueBridges."${parsedEvent.ssdpUSN.toString()}"
             def dni = "${parsedEvent.mac}"
             def d = getChildDevice(dni)
             def networkAddress = null
@@ -780,8 +779,7 @@ def locationHandler(evt) {
             log.trace "description.xml response (application/xml)"
             def body = new XmlSlurper().parseText(parsedEvent.body)
             if (body?.device?.modelName?.text().startsWith("Philips hue bridge")) {
-                def bridges = getHueBridges()
-                def bridge = bridges.find {it?.key?.contains(body?.device?.UDN?.text())}
+                def bridge = hueBridges.find {it?.key?.contains(body?.device?.UDN?.text())}
                 if (bridge) {
                     bridge.value << [name:body?.device?.friendlyName?.text(), serialNumber:body?.device?.serialNumber?.text(), verified: true]
                 } else {
@@ -1210,11 +1208,11 @@ private getBridgeIP() {
         }
         if (host == null || host == "") {
             def serialNumber = selectedHue
-            def bridge = getHueBridges().find { it?.value?.serialNumber?.equalsIgnoreCase(serialNumber) }?.value
+            def bridge = hueBridges.find { it?.value?.serialNumber?.equalsIgnoreCase(serialNumber) }?.value
             if (!bridge) {
                 //failed because mac address sent from hub is wrong and doesn't match the hue's real mac address and serial number
                 //in this case we will look up the bridge by comparing the incorrect mac addresses
-                bridge = getHueBridges().find { it?.value?.mac?.equalsIgnoreCase(serialNumber) }?.value
+                bridge = hueBridges.find { it?.value?.mac?.equalsIgnoreCase(serialNumber) }?.value
             }
             if (bridge?.ip && bridge?.port) {
                 if (bridge?.ip.contains(".")) {
