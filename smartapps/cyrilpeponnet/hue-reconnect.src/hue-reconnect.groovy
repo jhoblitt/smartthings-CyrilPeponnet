@@ -455,6 +455,14 @@ void setUsername(String u) {
     state.username = u
 }
 
+int getBridgeRefreshCount() {
+    state.bridgeRefreshCount = state.bridgeRefreshCount ?: 0
+}
+
+void setBridgeRefreshCount(int c) {
+    state.bridgeRefreshCount = c
+}
+
 def installed() {
     log.trace "Installed with settings: ${settings}"
     initialize()
