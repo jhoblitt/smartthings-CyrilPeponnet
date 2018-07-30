@@ -430,7 +430,7 @@ Map getHueScenes() {
     state.scenes = state.scenes ?: [:]
 }
 
-def getHueBridges() {
+Map getHueBridges() {
     state.bridges = state.bridges ?: [:]
 }
 
