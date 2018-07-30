@@ -89,34 +89,45 @@ def bridgeDiscovery(params=[:]) {
     bridgeRefreshCount += 1
     def refreshInterval = 3
 
-    def options = bridges ?: []
-    def numFound = options.size() ?: 0
-
-    if (numFound == 0 && bridgeRefreshCount > 25) {
+    if (bridges.size() == 0 && bridgeRefreshCount > 25) {
         log.trace "Cleaning old bridges memory"
         hueBridges = [:]
         bridgeRefreshCount = 0
         app.updateSetting("selectedHue", "")
     }
 
-    subscribe(location, null, locationHandler, [filterEvents:false])
+    subscribe(location, null, locationHandler, [filterEvents: false])
 
-    //bridge discovery request every 15 //25 seconds
+    // bridge discovery request every 15 //25 seconds
     if ((bridgeRefreshCount % 5) == 0) {
         discoverBridges()
     }
 
-    //setup.xml request every 3 seconds except on discoveries
+    // setup.xml request every 3 seconds except on discoveries
     if (((bridgeRefreshCount % 1) == 0) && ((bridgeRefreshCount % 5) != 0)) {
         verifyHueBridges()
     }
 
-    return dynamicPage(name:"bridgeDiscovery", title:"Discovery Started!", nextPage:"bridgeBtnPush", refreshInterval:refreshInterval, uninstall: true) {
-        section("Please wait while we discover your Hue Bridge. Discovery can take five minutes or more, so sit back and relax! Select your device below once discovered.") {
-            input "selectedHue", "enum", required:false, title:"Select Hue Bridge (${numFound} found)", multiple:false, options:options
+    return dynamicPage(
+        name: "bridgeDiscovery",
+        title: "Discovery Started!",
+        nextPage: "bridgeBtnPush",
+        refreshInterval: refreshInterval,
+        uninstall: true,
+    ) {
+        def secTitle = "Please wait while we discover your Hue Bridge." \
+            + " Discovery can take five minutes or more, so sit back and" \
+            + " relax! Select your device below once discovered."
+        section(secTitle) {
+            input("selectedHue", "enum",
+                required: false,
+                title: "Select Hue Bridge (${bridges.size()} found)",
+                multiple: false,
+                options: bridges,
+            )
         }
     }
-}
+} // bridgeDiscovery
 
 def bridgeLinking() {
     int linkRefreshcount = !state.linkRefreshcount ? 0 : state.linkRefreshcount as int
