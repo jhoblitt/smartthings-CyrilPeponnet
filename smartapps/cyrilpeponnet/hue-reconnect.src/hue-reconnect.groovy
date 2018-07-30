@@ -59,21 +59,27 @@ preferences {
 
 def mainPage() {
     if (canInstallLabs()) {
-        def bridges = bridgesDiscovered()
-        if (state.username && bridges) {
+        if (username && bridgesDiscovered()) {
             return itemDiscovery()
-        } else {
-            return bridgeDiscovery()
         }
-    } else {
-        def upgradeNeeded = """To use SmartThings Labs, your Hub should be completely up to date.
+        return bridgeDiscovery()
+    }
 
-To update your Hub, access Location Settings in the Main Menu (tap the gear next to your location name), select your Hub, and choose "Update Hub"."""
+    def upgradeNeeded = """
+        To use SmartThings Labs, your Hub should be completely up to date.
 
-        return dynamicPage(name:"bridgeDiscovery", title:"Upgrade needed!", nextPage:"", install:false, uninstall: true) {
-            section("Upgrade") {
-                paragraph "$upgradeNeeded"
-            }
+        To update your Hub, access Location Settings in the Main Menu (tap the gear next to your location name), select your Hub, and choose "Update Hub"."""
+    upgradeNeeded = upgradeNeeded.replaceFirst("\n","").stripIndent()
+
+    return dynamicPage(
+        name: "bridgeDiscovery",
+        title: "Upgrade needed!",
+        nextPage: "",
+        install: false,
+        uninstall: true,
+    ) {
+        section("Upgrade") {
+            paragraph(upgradeNeeded)
         }
     }
 }
