@@ -786,6 +786,7 @@ def locationHandler(evt) {
         def headerString = parsedEvent.headers.toString()
         if (headerString?.contains("xml")) {
             log.trace "description.xml response (application/xml)"
+            log.trace "response body: ${parsedEvent.body}"
             def body = new XmlSlurper().parseText(parsedEvent.body)
             if (body?.device?.modelName?.text().startsWith("Philips hue bridge")) {
                 def bridge = hueBridges.find {it?.key?.contains(body?.device?.UDN?.text())}
@@ -797,6 +798,7 @@ def locationHandler(evt) {
             }
         } else if(headerString?.contains("json")) {
             log.trace "description.xml response (application/json)"
+            log.trace "response body: ${parsedEvent.body}"
             def body = new groovy.json.JsonSlurper().parseText(parsedEvent.body)
             if (body.success != null) {
                 if (body.success[0] != null) {
