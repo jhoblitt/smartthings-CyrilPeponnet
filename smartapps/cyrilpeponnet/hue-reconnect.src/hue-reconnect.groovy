@@ -86,17 +86,16 @@ def mainPage() {
 
 def bridgeDiscovery(params=[:]) {
     def bridges = bridgesDiscovered()
-    int bridgeRefreshCount = !state.bridgeRefreshCount ? 0 : state.bridgeRefreshCount as int
-    state.bridgeRefreshCount = bridgeRefreshCount + 1
+    bridgeRefreshCount += 1
     def refreshInterval = 3
 
     def options = bridges ?: []
     def numFound = options.size() ?: 0
 
-    if (numFound == 0 && state.bridgeRefreshCount > 25) {
+    if (numFound == 0 && bridgeRefreshCount > 25) {
         log.trace "Cleaning old bridges memory"
         state.bridges = [:]
-        state.bridgeRefreshCount = 0
+        bridgeRefreshCount = 0
         app.updateSetting("selectedHue", "")
     }
 
@@ -167,7 +166,7 @@ def itemDiscovery() {
         subscribe(bridge, "groupList", groupListData)
         subscribe(bridge, "sceneList", sceneListData)
     }
-    state.bridgeRefreshCount = 0
+    bridgeRefreshCount = 0
 
     Map bulbs = bulbsDiscovered()
     if (!bulbs) {
@@ -479,7 +478,7 @@ def initialize() {
     log.debug "Initializing"
     unsubscribe(bridge)
     state.inItemDiscovery = false
-    state.bridgeRefreshCount = 0
+    bridgeRefreshCount = 0
     bulbRefreshCount = 0
     if (selectedHue) {
         addBridge()
