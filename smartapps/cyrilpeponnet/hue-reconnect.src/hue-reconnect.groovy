@@ -135,14 +135,14 @@ def bridgeLinking() {
         hueimage = null
     }
 
-    if (state.username) { //if discovery worked
+    if (username) { //if discovery worked
         nextPage = "itemDiscovery"
         title = "Success!"
         paragraphText = "Linking to your hub was a success! Please click 'Next'!"
         hueimage = null
     }
 
-    if ((linkRefreshcount % 2) == 0 && !state.username) {
+    if ((linkRefreshcount % 2) == 0 && !username) {
         sendDeveloperReq()
     }
 
@@ -505,7 +505,7 @@ def timedRefresh() {
 
 def uninstalled() {
     state.bridges = [:]
-    state.username = null
+    username = null
 }
 
 // Handles events to add new items
@@ -790,14 +790,14 @@ def locationHandler(evt) {
             if (body.success != null) {
                 if (body.success[0] != null) {
                     if (body.success[0].username) {
-                        state.username = body.success[0].username
+                        username = body.success[0].username
                     }
                 }
             } else if (body.error != null) {
                 //TODO: handle retries...
                 log.error "ERROR: application/json ${body.error}"
             } else {
-                //GET /api/${state.username}/lights response (application/json)
+                //GET /api/${username}/lights response (application/json)
                 if (!body?.state?.on) { //check if first time poll made it here by mistake
                     def bulbs = getHueBulbs()
                     def scenes = getHueScenes()
@@ -1157,7 +1157,7 @@ private getGroupID(childDevice) {
 
 private poll() {
     def host = getBridgeIP()
-    def uri = "/api/${state.username}/lights/"
+    def uri = "/api/${username}/lights/"
     try {
         sendHubCommand(new physicalgraph.device.HubAction("GET ${uri} HTTP/1.1\r\n" +
             "HOST: ${host}\r\n\r\n", physicalgraph.device.Protocol.LAN, selectedHue))
@@ -1165,7 +1165,7 @@ private poll() {
         log.warn "Parsing Body failed - trying again...Polling Lights"
         doDeviceSync()
     }
-    uri = "/api/${state.username}/groups/"
+    uri = "/api/${username}/groups/"
     try {
         log.debug "GET:  $uri"
         sendHubCommand(new physicalgraph.device.HubAction("GET ${uri} HTTP/1.1\r\n" +
@@ -1178,7 +1178,7 @@ private poll() {
 
 private put(path, body) {
     def host = getBridgeIP()
-    def uri = "/api/${state.username}/$path"
+    def uri = "/api/${username}/$path"
     def bodyJSON = new groovy.json.JsonBuilder(body).toString()
     def length = bodyJSON.getBytes().size().toString()
 
