@@ -177,9 +177,9 @@ def itemDiscovery() {
     state.inItemDiscovery = true
     if (selectedHue) {
         def bridge = getChildDevice(selectedHue)
-        subscribe(bridge, "bulbList", bulbListData)
-        subscribe(bridge, "groupList", groupListData)
-        subscribe(bridge, "sceneList", sceneListData)
+        subscribe(bridge, "bulbList", setHueBulbs)
+        subscribe(bridge, "sceneList", setHueScenes)
+        subscribe(bridge, "groupList", setHueGroups)
     }
     bridgeRefreshCount = 0
 
@@ -414,30 +414,18 @@ def is_latest(date1, date2) {
     return (d1 > d2)
 }
 
-def bulbListData(evt) {
-    state.bulbs = evt.jsonData
-}
-
-def sceneListData(evt) {
-    state.scenes = evt.jsonData
-}
-
-def groupListData(evt) {
-    state.groups = evt.jsonData
-}
-
+// hueBulbs
 // XXX rename property to hueLights?
-Map getHueBulbs() {
-    state.bulbs = state.bulbs ?: [:]
-}
+Map getHueBulbs() { state.bulbs = state.bulbs ?: [:] }
+void setHueBulbs(evt) { state.bulbs = evt.jsonData }
 
-Map getHueGroups() {
-    state.groups = state.groups ?: [:]
-}
+// hueScenes
+Map getHueScenes() { state.scenes = state.scenes ?: [:] }
+void setHueScenes(evt) { state.scenes = evt.jsonData }
 
-Map getHueScenes() {
-    state.scenes = state.scenes ?: [:]
-}
+// hueGroups
+Map getHueGroups() { state.groups = state.groups ?: [:] }
+void setHueGroups(evt) { state.groups = evt.jsonData }
 
 Map getHueBridges() {
     state.bridges = state.bridges ?: [:]
