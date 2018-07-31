@@ -362,34 +362,29 @@ Map bulbsDiscovered() {
 }
 
 Map groupsDiscovered() {
-    log.debug("Entered BulbsDiscovered")
-    def groups = getHueGroups()
+    log.trace("Entered groupsDiscovered")
+
     def groupmap = [:]
-    if (groups instanceof java.util.Map) {
-        groups.each {
-            log.trace "Adding ${it.value.name} to group list"
-            def value = "${it.value.name}"
-            def key = app.id +"/GROUP"+ it.value.id
-            groupmap["${key}"] = value
-        }
-    } else { //backwards compatable
-        groups.each {
-            log.trace "Adding ${it.value.name} to group list"
-            def value = "${it.name}"
-            def key = app.id +"/GROUP"+ it.id
-            groupmap["${key}"] = value
-        }
+    hueGroups.each { group ->
+        log.trace "Adding ${group.value.name} to group list"
+        def value = "${group.value.name}"
+        def key = app.id +"/GROUP"+ group.value.id
+        groupmap["${key}"] = value
     }
+
     return groupmap
 }
 
 Map scenesDiscovered() {
-    Map scenes = getHueScenes()
-    def scenemap = [:]
+    log.trace("Entered scenesDiscovered")
+
+    /* XXX what is the intended purpose of sceneTime? It appears to be
+     * calculated and then never used.
+
     def sceneTime = [:]
 
     // first pass to keep only the latest items
-    scenes.each {
+    hueScenes.each {
         def shortname = it.value.name.minus(~/ on \d+/)
         if (sceneTime."${shortname}") {
             if (sceneTime."${shortname}".lastupdated && is_latest(it.value.lastupdated, sceneTime."${shortname}".lastupdated)) {
@@ -399,17 +394,19 @@ Map scenesDiscovered() {
             sceneTime["${shortname}"] = ['lastupdated': it.value.lastupdated, 'id': it.value.id]
         }
     }
+    */
 
-    scenes.each {
-        log.trace "Adding ${it.value.name} to scene list"
-        def lights = it.value.lights ? " ${it.value.lights}" : ''
-        def value = "${it.value.name.minus(~/ on \d+/)}${lights}"
-        def key = app.id +"/"+ it.value.id
+    def scenemap = [:]
+    hueScenes.each { scene ->
+        log.trace "Adding ${scene.value.name} to scene list"
+        def lights = scene.value.lights ? " ${scene.value.lights}" : ''
+        def value = "${scene.value.name.minus(~/ on \d+/)}${lights}"
+        def key = app.id +"/"+ scene.value.id
         scenemap["${key}"] = value
     }
 
     return scenemap
-}
+} // scenesDiscovered
 
 def is_latest(date1, date2) {
     def d1 = new Date().parse("yyyy-MM-dd'T'HH:mm:ss", date1)
