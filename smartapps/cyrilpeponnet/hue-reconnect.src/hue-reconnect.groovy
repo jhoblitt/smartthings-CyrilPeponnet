@@ -427,41 +427,30 @@ void setHueScenes(evt) { state.scenes = evt.jsonData }
 Map getHueGroups() { state.groups = state.groups ?: [:] }
 void setHueGroups(evt) { state.groups = evt.jsonData }
 
-Map getHueBridges() {
-    state.bridges = state.bridges ?: [:]
-}
+// hueBridges
+Map getHueBridges() { state.bridges = state.bridges ?: [:] }
+void setHueBridges(Map b) { state.bridges = b }
 
-void setHueBridges(Map b) {
-    state.bridges = b
-}
-
+// verifiedHueBridges
 def getVerifiedHueBridges() {
     hueBridges.findAll{ it?.value?.verified == true }
 }
 
+// bulbRefreshCount
 int getBulbRefreshCount() {
     state.bulbRefreshCount = state.bulbRefreshCount ?: 0
 }
+void setBulbRefreshCount(int c) { state.bulbRefreshCount = c }
 
-void setBulbRefreshCount(int c) {
-    state.bulbRefreshCount = c
-}
+// username
+String getUsername() { state.username }
+void setUsername(String u) { state.username = u }
 
-String getUsername() {
-    state.username
-}
-
-void setUsername(String u) {
-    state.username = u
-}
-
+// bridgeRefreshCount
 int getBridgeRefreshCount() {
     state.bridgeRefreshCount = state.bridgeRefreshCount ?: 0
 }
-
-void setBridgeRefreshCount(int c) {
-    state.bridgeRefreshCount = c
-}
+void setBridgeRefreshCount(int c) { state.bridgeRefreshCount = c }
 
 // linkRefreshCount
 int getLinkRefreshCount() {
