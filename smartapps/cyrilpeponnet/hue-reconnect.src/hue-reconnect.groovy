@@ -346,25 +346,18 @@ Map bridgesDiscovered() {
     return map
 }
 
+// XXX rename to lightsDiscovered?
 Map bulbsDiscovered() {
-    log.debug("Entered BulbsDiscovered")
-    def bulbs = getHueBulbs()
+    log.trace("Entered bulbsDiscovered")
+
     def bulbmap = [:]
-    if (bulbs instanceof java.util.Map) {
-        bulbs.each {
-            log.trace "Adding ${it.value.name} to bulb list"
-            def value = "${it.value.name}"
-            def key = app.id +"/"+ it.value.id
-            bulbmap["${key}"] = value
-        }
-    } else { //backwards compatable
-        bulbs.each {
-            log.trace "Adding ${it.value.name} to bulb list"
-            def value = "${it.name}"
-            def key = app.id +"/"+ it.id
-            bulbmap["${key}"] = value
-        }
+    hueBulbs.each { bulb ->
+        log.trace "Adding ${bulb.value.name} to bulb list"
+        def value = "${bulb.value.name}"
+        def key = app.id +"/"+ bulb.value.id
+        bulbmap["${key}"] = value
     }
+
     return bulbmap
 }
 
@@ -436,6 +429,7 @@ def groupListData(evt) {
     state.groups = evt.jsonData
 }
 
+// XXX rename property to hueLights?
 Map getHueBulbs() {
     state.bulbs = state.bulbs ?: [:]
 }
