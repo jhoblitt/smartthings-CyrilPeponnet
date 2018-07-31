@@ -130,42 +130,46 @@ def bridgeDiscovery(params=[:]) {
 } // bridgeDiscovery
 
 def bridgeLinking() {
-    int linkRefreshcount = !state.linkRefreshcount ? 0 : state.linkRefreshcount as int
-    state.linkRefreshcount = linkRefreshcount + 1
+    linkRefreshCount += 1
     def refreshInterval = 3
 
     def nextPage = ""
     def title = "Linking with your Hue"
-    def paragraphText
+    def paragraphText = "You haven't selected a Hue Bridge," \
+        + " please Press \"Done\" and select one before clicking next."
     def hueimage = null
+
     if (selectedHue) {
         paragraphText = "Press the button on your Hue Bridge to setup a link. "
         hueimage = "http://huedisco.mediavibe.nl/wp-content/uploads/2013/09/pair-bridge.png"
-    } else {
-        paragraphText = "You haven't selected a Hue Bridge, please Press \"Done\" and select one before clicking next."
-        hueimage = null
     }
 
-    if (username) { //if discovery worked
+    // if discovery worked
+    if (username) {
         nextPage = "itemDiscovery"
         title = "Success!"
         paragraphText = "Linking to your hub was a success! Please click 'Next'!"
         hueimage = null
     }
 
-    if ((linkRefreshcount % 2) == 0 && !username) {
+    if ((linkRefreshCount % 2) == 0 && !username) {
         sendDeveloperReq()
     }
 
-    return dynamicPage(name:"bridgeBtnPush", title:title, nextPage:nextPage, refreshInterval:refreshInterval) {
+    return dynamicPage(
+        name: "bridgeBtnPush",
+        title: title,
+        nextPage: nextPage,
+        refreshInterval: refreshInterval,
+    ) {
         section("") {
-            paragraph """${paragraphText}"""
-            if (hueimage != null) {
-                image "${hueimage}"
+            paragraph(paragraphText)
+            if (hueimage) {
+                image(hueimage)
             }
         }
     }
-}
+} // bridgeLinking
 
 def itemDiscovery() {
     bulbRefreshCount += 1
@@ -475,6 +479,12 @@ int getBridgeRefreshCount() {
 void setBridgeRefreshCount(int c) {
     state.bridgeRefreshCount = c
 }
+
+// linkRefreshCount
+int getLinkRefreshCount() {
+    state.linkRefreshCount = state.linkRefreshCount ?: 0
+}
+void setLinkRefreshCount(int c) { state.linkRefreshCount = c }
 
 def installed() {
     log.trace "Installed with settings: ${settings}"
