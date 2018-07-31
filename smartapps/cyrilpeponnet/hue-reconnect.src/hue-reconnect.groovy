@@ -250,7 +250,11 @@ def itemDiscovery() {
 } // itemDiscovery
 
 private discoverBridges() {
-    sendHubCommand(new physicalgraph.device.HubAction("lan discovery urn:schemas-upnp-org:device:basic:1", physicalgraph.device.Protocol.LAN))
+    def action = new physicalgraph.device.HubAction(
+        "lan discovery urn:schemas-upnp-org:device:basic:1",
+        physicalgraph.device.Protocol.LAN
+    )
+    sendHubCommand(action)
 }
 
 private sendDeveloperReq() {
