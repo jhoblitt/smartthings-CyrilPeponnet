@@ -527,12 +527,12 @@ def itemListHandler(hub, data = "") {
                     bulbs[k] = [id: k, name: v.name, type: v.type, hub:hub]
                 } else if (v.type == "LightGroup" || v.type == "Room" || v.type =="LightSource") {
                     log.debug("Its a group")
-                    //def lights = []
-                    //v.lights.each { light -> lights << state.bulbs?."${light}".name}
+                    // def lights = []
+                    // v.lights.each { light -> lights << state.bulbs?."${light}".name}
                     groups[k] = [id: k, name: v.name, type: v.type, hub:hub]
                 }  else if (v.get('lastupdated')) {
                     log.debug("Its a scene")
-                    //def lights = []
+                    // def lights = []
                     // v.lights.each { light -> lights << state.bulbs?."${light}".name}
                     scenes[k] = [id: k, name: v.name, hub:hub, lastupdated:v?.lastupdated]
                 }
@@ -713,11 +713,11 @@ def locationHandler(evt) {
     parsedEvent << ["hub":hub]
 
     if (parsedEvent?.ssdpTerm?.contains("urn:schemas-upnp-org:device:basic:1")) {
-        //SSDP DISCOVERY EVENTS
+        // SSDP DISCOVERY EVENTS
         log.trace "SSDP DISCOVERY EVENTS"
         log.trace hueBridges.toString()
         if (!(hueBridges."${parsedEvent.ssdpUSN.toString()}")) {
-            //bridge does not exist
+            // bridge does not exist
             log.trace "Adding bridge ${parsedEvent.ssdpUSN}"
             hueBridges << ["${parsedEvent.ssdpUSN.toString()}":parsedEvent]
         } else {
@@ -789,11 +789,11 @@ def locationHandler(evt) {
                     }
                 }
             } else if (body.error != null) {
-                //TODO: handle retries...
+                // TODO: handle retries...
                 log.error "ERROR: application/json ${body.error}"
             } else {
-                //GET /api/${username}/lights response (application/json)
-                if (!body?.state?.on) { //check if first time poll made it here by mistake
+                // GET /api/${username}/lights response (application/json)
+                if (!body?.state?.on) { // check if first time poll made it here by mistake
                     def bulbs = getHueBulbs()
                     def scenes = getHueScenes()
                     def groups = getHueGroups()
@@ -861,7 +861,7 @@ def parse(childDevice, description) {
                 poll()
             }
             if (body instanceof java.util.HashMap) {
-                //poll response
+                // poll response
                 def bulbs = getChildDevices()
                 for (bulb in body) {
                     def d = bulbs.find{it.deviceNetworkId == "${app.id}/${bulb.key}"}
@@ -911,7 +911,7 @@ def parse(childDevice, description) {
                         }
                     }
                 }
-            } else { //put response
+            } else { // put response
                 def hsl = [:]
                 body.each { payload ->
                     log.debug $payload
@@ -1203,8 +1203,10 @@ private getBridgeIP() {
             def serialNumber = selectedHue
             def bridge = hueBridges.find { it?.value?.serialNumber?.equalsIgnoreCase(serialNumber) }?.value
             if (!bridge) {
-                //failed because mac address sent from hub is wrong and doesn't match the hue's real mac address and serial number
-                //in this case we will look up the bridge by comparing the incorrect mac addresses
+                // failed because mac address sent from hub is wrong and
+                // doesn't match the hue's real mac address and serial number
+                // in this case we will look up the bridge by comparing the
+                // incorrect mac addresses
                 bridge = hueBridges.find { it?.value?.mac?.equalsIgnoreCase(serialNumber) }?.value
             }
             if (bridge?.ip && bridge?.port) {
